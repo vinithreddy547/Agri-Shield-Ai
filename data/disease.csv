@@ -1,0 +1,6 @@
+crop_type,disease_name,primary_symptoms,weather_trigger_condition,prevention_protocol
+Corn,Gray Leaf Spot,Rectangular brown lesions on leaves,High humidity (>90%) and warm temperatures (25-30C),Crop rotation and protective fungicide application
+Almonds,Brown Rot,Blossom blight and decaying fruit,Wet spring conditions during bloom,Pruning infected twigs and applying protective fungicide
+Rice,Rice Blast,Diamond-shaped lesions with grey centers,Cool temperatures (<25C) with high humidity,Planting resistant varieties and avoiding excess nitrogen
+Coffee,Coffee Leaf Rust,Powdery orange spots on leaf undersides,High moisture and warm temperatures (20-25C),Copper-based fungicide spray and shade management
+Wheat,Stem Rust,Reddish-brown pustules on stems,Warm temperatures (20-35C) with wet foliage,Planting resistant cultivars and early planting season setup
