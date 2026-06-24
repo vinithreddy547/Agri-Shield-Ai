@@ -1,3 +1,21 @@
+"""
+AgriShield AI: Streamlit Frontend Layout & Style Sheet Component
+
+This module manages the visual rendering and presentation styling for the dashboard.
+It implements a premium, custom dark-mode aesthetic utilizing CSS injection directly 
+into Streamlit's web-view context.
+
+Key Design Decisions:
+1. Glassmorphism: Cards represent standalone AI agents using high-fidelity transparent 
+   slate backgrounds (#10b981 border with backdrop filter blur) for depth.
+2. Custom Typography: Injects 'Urbanist' and 'Inter' font faces from Google Fonts for 
+   optimal readability.
+3. Clean Grid Structure: Organizes the orchestrator's summary in a prominent top-level 
+   Hero banner followed by a 2-column grid layout for the 5 specialized sub-agent cards.
+4. Input Containment: Embeds parameters inside a Streamlit sidebar form block to bundle 
+   input state updates, preventing unneeded rerun requests.
+"""
+
 import streamlit as st
 
 def inject_premium_styles():
