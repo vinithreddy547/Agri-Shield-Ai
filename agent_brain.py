@@ -3,6 +3,18 @@ import pandas as pd
 from google import genai
 from google.genai import types
 
+# Try to load local .env file if it exists (Task 3.1)
+if os.path.exists(".env"):
+    try:
+        with open(".env", "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip() and not line.startswith("#"):
+                    parts = line.strip().split("=", 1)
+                    if len(parts) == 2:
+                        os.environ[parts[0].strip()] = parts[1].strip()
+    except Exception as e:
+        print(f"[Warning] Failed to load .env file: {e}")
+
 # Initialize client using the official modern Google GenAI SDK (Task 3.1)
 # Expects GEMINI_API_KEY as an active environment variable
 client = None
