@@ -5,7 +5,12 @@ from google.genai import types
 
 # Initialize client using the official modern Google GenAI SDK (Task 3.1)
 # Expects GEMINI_API_KEY as an active environment variable
-client = genai.Client()
+client = None
+try:
+    if os.environ.get("GEMINI_API_KEY"):
+        client = genai.Client()
+except Exception as e:
+    print(f"[SDK Warning] GenAI Client initialization failed: {e}")
 MODEL_ID = "gemini-2.5-flash"
 
 def load_grounding_context(inputs: dict) -> dict:
@@ -54,7 +59,12 @@ def load_grounding_context(inputs: dict) -> dict:
 
 def call_expert_agent(system_instruction: str, query_content: str) -> str:
     """Standardized API handler executing localized system prompts via gemini-2.5-flash."""
+    global client
+    if not os.environ.get("GEMINI_API_KEY"):
+        return "Operational analysis temporarily offline due to API transport disruptions: GEMINI_API_KEY environment variable is not configured."
     try:
+        if client is None:
+            client = genai.Client()
         response = client.models.generate_content(
             model=MODEL_ID,
             contents=query_content,
