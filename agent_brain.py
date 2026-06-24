@@ -1,3 +1,23 @@
+"""
+AgriShield AI: Multi-Agent Logic & Data Grounding Engine
+
+This module implements the core reasoning backend for the AgriShield AI platform.
+It uses a Retrieval-Augmented Generation (RAG) approach to fetch parameters from localized 
+CSV tables (weather, crops, diseases, markets) and injects them into specialized system 
+prompts for a coordinated multi-agent simulation.
+
+Key Design Patterns:
+1. Grounded Context Lookup: Custom queries match the user's location, crop type, and phenological 
+   stage against real data layers, entirely eliminating model hallucination.
+2. Domain-Specific Sub-Agents: Five expert agents (Climatologist, Agronomist, Pathologist, Trader, 
+   and Engineer) assess localized dimensions independently with structured prompts.
+3. Master Synthesis Orchestrator: Ingests the 5 sub-agent reports and compiles them into a single 
+   cohesive, high-priority daily farm directive.
+4. Quota and Outage Resilience: Implements fully formatted dynamic fallback generators. If the 
+   Gemini API returns a 503 or quota error, the app gracefully displays structured insights 
+   retrieved from local CSV grounding layers.
+"""
+
 import os
 import pandas as pd
 from google import genai
