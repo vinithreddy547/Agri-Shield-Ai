@@ -1,6 +1,0 @@
-location,date,temperature_c,humidity_pct,rainfall_mm,climate_risk_level,forecast_summary
-Midwest US,2026-06-20,28.5,65,12.0,Low,Normal summer rain
-California Central Valley,2026-06-21,38.2,20,0.0,High,Extreme heatwave and drought conditions
-Punjab India,2026-06-22,32.0,85,45.0,Medium,Heavy monsoon showers with risk of waterlogging
-Kenya Rift Valley,2026-06-23,22.1,70,5.0,Low,Moderate rain with ideal growing conditions
-Queensland Australia,2026-06-24,15.0,50,0.0,High,Severe frost warning overnight
