@@ -1,0 +1,6 @@
+location,date,temperature_c,humidity_pct,rainfall_mm,climate_risk_level,forecast_summary
+California Central Valley,2026-06-24,38.2,20,0.0,High,Extreme heatwave and severe drought conditions building over the basin.
+Mekong Delta,2026-06-24,24.5,92,45.2,High,Heavy monsoonal precipitation with imminent localized flash flood warnings.
+Andhra Pradesh Hub,2026-06-24,31.0,65,5.0,Medium,Unseasonable scattered convective showers accompanied by high humidity.
+Iowa Corn Belt,2026-06-24,26.1,55,0.0,Low,Optimal temperate growing conditions with clear sunny intervals.
+Bordeaux Region,2026-06-24,19.8,88,12.4,Medium,Persistent cool morning mist transforming into steady afternoon drizzle.

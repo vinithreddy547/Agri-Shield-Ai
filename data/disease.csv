@@ -1,0 +1,6 @@
+crop_type,disease_name,primary_symptoms,weather_trigger_condition,prevention_protocol
+Corn,Northern Corn Leaf Blight,"Long, elliptical, grayish-green lesions on leaves.",Moderate temperatures (18-27°C) with prolonged dampness.,Deploy resistant hybrids and optimize row crop spacing for aeration.
+Rice,Rice Blast,Diamond-shaped lesions with gray centers and reddish borders.,Cool temperatures (<25°C) coupled with high relative humidity (>90%).,Avoid excessive nitrogen application and maintain uniform field flooding.
+Almonds,Hull Rot,Tan to black leaf necrosis originating from infected hulls.,High temperatures (>32°C) combined with late-season over-irrigation.,Implement regulated deficit irrigation during the hull-split phase.
+Wheat,Stem Rust,Brick-red pustules breaking through the epidermis of stems.,Warm humid days (20-30°C) with continuous overnight dew formation.,Apply targeted preventative triazole fungicides at first flag leaf emergence.
+Soybeans,Pythium Damping-Off,Water-soaked lesions causing seed rot and seedling collapse.,"Saturated, poorly drained soils with cool ambient temperatures.",Ensure premium seed chemical treatment and delay planting until soil warms.

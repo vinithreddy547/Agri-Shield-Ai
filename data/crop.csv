@@ -1,0 +1,6 @@
+crop_type,ideal_soil,growth_stage,daily_water_requirement_liters,baseline_yield_ton_per_acre
+Corn,Loam,Vegetative,5.5,4.5
+Rice,Clay,Flowering,12.0,3.2
+Almonds,Sandy Loam,Yield Formation,25.0,1.1
+Wheat,Silt Loam,Ripening,3.0,2.8
+Soybeans,Loam,Germination,2.5,2.2
