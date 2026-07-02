@@ -110,10 +110,29 @@ def call_expert_agent(system_instruction: str, query_content: str, fallback_valu
         print(f"[API Warning] Falling back to local data grounding. Details: {e}")
         return fallback_value
 
+def sanitize_input(text: str) -> str:
+    """Sanitizes user inputs to prevent prompt injection and remove malicious system instruction overrides (Security Feature)."""
+    if not isinstance(text, str):
+        return str(text)
+    # Case-insensitive block list for injection payloads
+    forbidden_patterns = ["system instruction", "ignore previous", "override", "you must say", "instead of", "forget all", "act as"]
+    cleaned = text
+    for pattern in forbidden_patterns:
+        idx = cleaned.lower().find(pattern)
+        while idx != -1:
+            cleaned = cleaned[:idx] + "[redacted]" + cleaned[idx + len(pattern):]
+            idx = cleaned.lower().find(pattern)
+    # Character filter
+    cleaned = "".join([c for c in cleaned if c.isalnum() or c in " ,.-_()&@/"])
+    return cleaned.strip()[:100]
+
 def run_multi_agent_pipeline(inputs: dict) -> dict:
     """Orchestrates sequential execution of sub-agents and synthesizes results (Task 3.3 & 3.4)."""
+    # Sanitize all inputs to prevent injection attacks
+    sanitized_inputs = {k: sanitize_input(v) for k, v in inputs.items()}
+    
     # 1. Fetch data grounding data chunks
-    ctx = load_grounding_context(inputs)
+    ctx = load_grounding_context(sanitized_inputs)
     
     # 2. Build local telemetry-grounded fallback responses to protect against API outages (e.g. 503 Unavailable)
     w_data = ctx['weather']
@@ -126,25 +145,25 @@ def run_multi_agent_pipeline(inputs: dict) -> dict:
     if isinstance(c_data, dict):
         c_fallback = f"🌱 [Grounded Agronomy] Target stage is {c_data.get('growth_stage')}. Daily water requirement is {c_data.get('daily_water_requirement_liters')} Liters/plant with a baseline yield of {c_data.get('baseline_yield_ton_per_acre')} ton/acre."
     else:
-        c_fallback = f"🌱 [Grounded Agronomy] General parameters for {inputs['crop_type']} at stage {inputs['growth_stage']} loaded."
+        c_fallback = f"🌱 [Grounded Agronomy] General parameters for {sanitized_inputs['crop_type']} at stage {sanitized_inputs['growth_stage']} loaded."
 
     d_data = ctx['disease']
     if isinstance(d_data, dict):
         d_fallback = f"🦠 [Grounded Pathology] Spore Risk: {d_data.get('disease_name')}. Symptoms: {d_data.get('primary_symptoms')} Trigger: {d_data.get('weather_trigger_condition')}. Protocol: {d_data.get('prevention_protocol')}."
     else:
-        d_fallback = f"🦠 [Grounded Pathology] No active pathogen triggers verified for {inputs['crop_type']} under current dry thresholds."
+        d_fallback = f"🦠 [Grounded Pathology] No active pathogen triggers verified for {sanitized_inputs['crop_type']} under current dry thresholds."
 
     m_data = ctx['market']
     if isinstance(m_data, dict):
         m_fallback = f"💰 [Grounded Commodities] Price: ${m_data.get('current_price_per_ton'):,.2f}/ton | Demand Index: {m_data.get('demand_index')} in {m_data.get('market_region')}. Forecast: {m_data.get('price_trend_forecast')}"
     else:
-        m_fallback = f"💰 [Grounded Commodities] Market details for {inputs['crop_type']} are currently unavailable."
+        m_fallback = f"💰 [Grounded Commodities] Market details for {sanitized_inputs['crop_type']} are currently unavailable."
 
     if isinstance(w_data, dict) and isinstance(c_data, dict):
         temp = float(w_data.get('temperature_c', 25.0))
         water = c_data.get('daily_water_requirement_liters', 5.5)
         if temp > 35:
-            r_fallback = f"💧 [Grounded Resource Engine] Elevated heat threshold ({temp}°C) detected in {inputs['location']}. Increase irrigation frequency above standard {water}L/plant requirement."
+            r_fallback = f"💧 [Grounded Resource Engine] Elevated heat threshold ({temp}°C) detected in {sanitized_inputs['location']}. Increase irrigation frequency above standard {water}L/plant requirement."
         else:
             r_fallback = f"💧 [Grounded Resource Engine] Standard temperate conditions. Maintain base irrigation of {water}L/plant."
     else:
@@ -158,21 +177,21 @@ def run_multi_agent_pipeline(inputs: dict) -> dict:
     demand_idx = m_data.get('demand_index', 0.80) if isinstance(m_data, dict) else 0.80
 
     o_fallback = (
-        f"👉 [Grounded Decision Summary] Action plan for {inputs['crop_type']} in {inputs['location']} ({inputs['growth_stage']}): "
+        f"👉 [Grounded Decision Summary] Action plan for {sanitized_inputs['crop_type']} in {sanitized_inputs['location']} ({sanitized_inputs['growth_stage']}): "
         f"Local sensors report: '{forecast_sum}'. Immediate action: Apply {water_req} Liters/plant daily, adjusting irrigation to protect crops "
         f"valued at ${price_val:,.2f}/ton (Demand Index: {demand_idx}). Mitigate pathogens by executing: '{prevent_prot}'."
     )
 
     # 3. Initialize sub-agent system instructions to mandate strict data compliance
     weather_prompt = "You are an expert Climatologist. Analyze this weather row data context and summarize local climate risks concisely: " + str(ctx['weather'])
-    crop_prompt = f"You are a Senior Agronomist. Evaluate crop data for growth constraints under soil condition '{inputs['soil_type']}': " + str(ctx['crop'])
+    crop_prompt = f"You are a Senior Agronomist. Evaluate crop data for growth constraints under soil condition '{sanitized_inputs['soil_type']}': " + str(ctx['crop'])
     disease_prompt = f"You are a Plant Pathologist. Assess pathogen risks using disease patterns and weather parameters: Data: {ctx['disease']} | Context: {ctx['weather']}"
     market_prompt = "You are an Agricultural Commodities Trader. Evaluate global/local transaction risks and valuation forecasts: " + str(ctx['market'])
     resource_prompt = f"You are an Irrigation & Resource Engineer. Dictate direct tactical crop hydration adjustments utilizing this data background: Weather: {ctx['weather']} | Crop Target: {ctx['crop']}"
     
     # 4. Fire parallel/sequential expert analysis tasks
     results = {}
-    query = f"Provide a direct, analytical report for {inputs['crop_type']} at {inputs['location']} during {inputs['growth_stage']} phase."
+    query = f"Provide a direct, analytical report for {sanitized_inputs['crop_type']} at {sanitized_inputs['location']} during {sanitized_inputs['growth_stage']} phase."
     
     results['weather'] = call_expert_agent(weather_prompt, query, w_fallback)
     results['crop'] = call_expert_agent(crop_prompt, query, c_fallback)
@@ -189,7 +208,7 @@ def run_multi_agent_pipeline(inputs: dict) -> dict:
     )
     
     orchestrator_query = (
-        f"Inputs: Location={inputs['location']}, Crop={inputs['crop_type']}, Stage={inputs['growth_stage']}, Soil={inputs['soil_type']}\n\n"
+        f"Inputs: Location={sanitized_inputs['location']}, Crop={sanitized_inputs['crop_type']}, Stage={sanitized_inputs['growth_stage']}, Soil={sanitized_inputs['soil_type']}\n\n"
         f"Weather Agent Report: {results['weather']}\n\n"
         f"Agronomy Agent Report: {results['crop']}\n\n"
         f"Pathology Agent Report: {results['disease']}\n\n"
